@@ -9,26 +9,26 @@ services:
     ports:
       - "80:80"
     links:
-      - php
+      - ${PHP_HOST}
   php:
-    container_name: php
+    container_name: ${PHP_HOST}
     build: .docker/php
     volumes:
       - .:/code:cached
       - .docker/php/php.ini:/usr/local/etc/php/php.ini:ro
     environment:
-      TIMEZONE: Europe/Moscow
+      TIMEZONE: ${TIMEZONE}
     links:
-      - mysql
+      - ${DB_HOST}
     working_dir: /code
   mysql:
-    container_name: mysql
+    container_name: ${DB_HOST}
     image: mysql:5.7
     ports:
-      - "3306:3306"
+      - "${DB_PORT}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
