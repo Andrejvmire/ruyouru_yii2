@@ -23,6 +23,11 @@ $config = [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
         ],
+        'jwt' => [
+            'class' => \sizeg\jwt\Jwt::class,
+            'key' => $_ENV['JWT_KEY'],
+            'jwtValidationData' => \app\components\JwtValidationData::class,
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
