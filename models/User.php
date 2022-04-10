@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\base\Exception;
+use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
@@ -15,14 +17,35 @@ use yii\web\IdentityInterface;
  * @property string|null $phone_number Номер телефона
  * @property string $password Пароль
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface
+class User extends ActiveRecord implements IdentityInterface
 {
+
+    const SCENARIO_ADD_DATA = 'ADD_DATA';
+
     /**
      * {@inheritdoc}
      */
     public static function tableName(): string
     {
         return 'users';
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        $uid = (string)$token->getClaim('uid');
+        return static::findOne(['id' => $uid]);
+    }
+
+    public function scenarios(): array
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_ADD_DATA] = ['first_name', 'last_name', 'phone_number'];
+        return $scenarios;
     }
 
     /**
@@ -73,17 +96,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'phone_number' => 'Phone Number',
             'password' => 'Password',
         ];
-    }
-
-    public static function findIdentity($id)
-    {
-        return static::findOne($id);
-    }
-
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        $uid = (string) $token->getClaim('uid');
-        return static::findOne(['id' => $uid]);
     }
 
     public function getId()
