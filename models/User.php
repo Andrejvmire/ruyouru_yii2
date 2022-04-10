@@ -13,6 +13,7 @@ use yii\web\IdentityInterface;
  * @property string|null $first_name Имя
  * @property string|null $last_name Фамилия
  * @property string|null $phone_number Номер телефона
+ * @property string $password Пароль
  */
 class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
@@ -30,9 +31,32 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules(): array
     {
         return [
-            [['email'], 'required'],
-            [['email'], 'string', 'max' => 45],
+            [['email', 'password'], 'required'],
+            [['email', 'password'], 'string', 'max' => 45],
             [['first_name', 'last_name', 'phone_number'], 'string', 'max' => 20],
+            [['password'], 'string', 'min' => 6],
+            ['email', 'unique']
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function beforeSave($insert): bool
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                $this->password = Yii::$app->security->generatePasswordHash($this->password);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function fields(): array
+    {
+        return [
+            'id', 'email', 'first_name', 'last_name', 'phone_number'
         ];
     }
 
@@ -47,6 +71,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'first_name' => 'First Name',
             'last_name' => 'Last Name',
             'phone_number' => 'Phone Number',
+            'password' => 'Password',
         ];
     }
 
