@@ -23,7 +23,7 @@ class UserController extends Controller
         return array_merge([
             "index" => ['GET', 'POST'],
             'login' => ['POST'],
-            'data' => ['GET']
+            'data' => ['POST']
         ],
             parent::verbs());
     }
